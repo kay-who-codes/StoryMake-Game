@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎲 StoryMake Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #64ffda;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+        }
+
+        .dice-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 40px 0;
+            min-height: 200px;
+            align-items: center;
+        }
+
+        .dice {
+            background: linear-gradient(145deg, #2a2a3e, #1f1f2e);
+            border: 2px solid #64ffda;
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 150px;
+            text-align: center;
+            font-size: 1.2em;
+            color: #64ffda;
+            box-shadow: 0 4px 15px rgba(100, 255, 218, 0.2);
+            animation: fadeIn 0.5s ease-in;
+            transition: transform 0.3s ease;
+        }
+
+        .dice:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(100, 255, 218, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) rotate(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes roll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .rolling {
+            animation: roll 0.5s ease-in-out;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #1a1a2e;
+            background: linear-gradient(135deg, #64ffda 0%, #4ecdc4 100%);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(100, 255, 218, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(100, 255, 218, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .instructions {
+            text-align: center;
+            margin-top: 30px;
+            color: #a0a0a0;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .count-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .count-selector label {
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        .count-selector input {
+            width: 60px;
+            padding: 8px;
+            background: #2a2a3e;
+            border: 2px solid #64ffda;
+            border-radius: 8px;
+            color: #e0e0e0;
+            text-align: center;
+            font-size: 1em;
+        }
+
+        .count-selector input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 StoryMake Game 🎲</h1>
+        
+        <div class="count-selector">
+            <label for="diceCount">Number of Elements:</label>
+            <input type="number" id="diceCount" min="1" max="5" value="3">
+        </div>
+
+        <button id="rollBtn" onclick="rollDice()">Roll the Dice!</button>
+        
+        <div class="dice-container" id="diceContainer">
+            <p style="color: #a0a0a0; text-align: center;">Click "Roll the Dice!" to generate story elements</p>
+        </div>
+
+        <div class="instructions">
+            <p>🌟 Create a story using the elements that appear!</p>
+            <p>Each roll gives you random prompts to spark your imagination.</p>
+        </div>
+    </div>
+
+    <script>
+        const storyElements = [
+    "🌙 A mysterious moon",
+    "🗝️ An ancient key",
+    "🌲 A dark forest",
+    "👻 A lonely ghost",
+    "🏰 A forgotten castle",
+    "📖 A magical book",
+    "🦉 A wise owl",
+    "⚡ A sudden storm",
+    "🎭 A hidden identity",
+    "🌊 A vast ocean",
+    "🔮 A crystal ball",
+    "🎪 A traveling circus",
+    "🗡️ A legendary sword",
+    "🌹 A cursed rose",
+    "🕰️ A broken clock",
+    "🎨 A haunted painting",
+    "🦋 A rare butterfly",
+    "🌋 An active volcano",
+    "👑 A lost crown",
+    "🎵 An enchanted melody",
+    "🏺 An ancient artifact",
+    "🌟 A falling star",
+    "🐉 A sleeping dragon",
+    "🎪 A fortune teller",
+    "🌺 A poisonous flower",
+    "📜 A secret map",
+    "🔥 An eternal flame",
+    "❄️ A frozen kingdom",
+    "🦊 A clever fox",
+    "🎭 A masquerade ball",
+    "🌪️ A time portal",
+    "💎 A cursed diamond",
+    "🏔️ A sacred mountain",
+    "🦅 A messenger bird",
+    "🌠 A prophecy",
+    "🎻 A broken violin",
+    "🗿 A stone statue",
+    "🌸 A spirit garden",
+    "⚓ A ghost ship",
+    "🎨 A forbidden art",
+    "🌑 An eclipse",
+    "🦴 Ancient bones",
+    "🎪 A shadow puppet",
+    "🌿 A healing herb",
+    "🔔 A silent bell",
+    "🦇 A vampire's lair",
+    "🌈 A rainbow bridge",
+    "🎯 An impossible challenge",
+    "🏮 A paper lantern",
+    "⚗️ A secret potion",
+    "🌅 A blood-red sunrise",
+    "🪞 A talking mirror",
+    "🎺 A cursed trumpet",
+    "🦁 A cowardly lion",
+    "🌌 A parallel universe",
+    "🧭 A broken compass",
+    "🎪 A abandoned carnival",
+    "🕷️ A giant spider",
+    "🌵 A desert oasis",
+    "🎲 A rigged dice",
+    "🦎 A shape-shifting lizard",
+    "🏛️ Ancient ruins",
+    "🌀 A whirlpool",
+    "🎪 A fire-breather",
+    "🦚 A proud peacock",
+    "🌊 A tidal wave",
+    "🧙 A reluctant wizard",
+    "🎃 A possessed pumpkin",
+    "🦗 A singing cricket",
+    "🌾 A wheat field maze",
+    "🎰 A lucky charm",
+    "🐺 A lone wolf",
+    "🌁 A foggy pier",
+    "🎬 A mysterious film",
+    "🦜 A pirate's parrot",
+    "🌋 Buried treasure",
+    "🎪 A tightrope walker",
+    "🐙 A kraken's tentacle",
+    "🌳 A talking tree",
+    "🎸 A rockstar's guitar",
+    "🦢 A black swan",
+    "🌄 A mountain temple",
+    "🎩 A magician's hat",
+    "🦂 A venomous scorpion",
+    "🌊 A message in a bottle",
+    "🎭 A tragic actor",
+    "🐻 A hibernating bear",
+    "🌸 Cherry blossom petals",
+    "🎪 A bearded lady",
+    "🦘 A jumping kangaroo",
+    "🌩️ A lightning strike",
+    "🎨 An unfinished masterpiece",
+    "🐍 A serpent's wisdom",
+    "🌕 A full moon ritual",
+    "🎯 A wanted poster",
+    "🦥 A sloth's secret",
+    "🌊 A lighthouse keeper",
+    "🎪 A sword swallower",
+    "🐢 An ancient turtle",
+    "🌺 A tropical island",
+    "🎭 A comedy of errors",
+    "🦨 A mysterious smell",
+    "🌋 Volcanic glass",
+    "🎪 A lion tamer",
+    "🐧 A lost penguin",
+    "🌙 A lunar eclipse",
+    "🎨 A paint-splattered clue",
+    "🦫 A dam builder",
+    "🌊 A shipwreck survivor",
+    "🎪 A contortionist",
+    "🐪 A desert caravan",
+    "🌸 A flower that never wilts",
+    "🎭 A double agent",
+    "🦭 A seal's bark",
+    "🌋 A lava flow",
+    "🎪 A clown's tears",
+    "🐝 A queen bee",
+    "🌙 Moonlight sonata",
+    "🎨 A forged painting",
+    "🦦 A playful otter",
+    "🌊 A coral reef",
+    "🎪 A juggling act",
+    "🐿️ A hoarding squirrel",
+    "🌸 A perfume bottle",
+    "🎭 A understudy's chance",
+    "🦔 A hedgehog's defense",
+    "🌋 A geothermal spring",
+    "🎪 An elephant's memory",
+    "🐞 A lucky ladybug",
+    "🌙 A howling wolf",
+    "🎨 A sculptor's chisel",
+    "🦒 A giraffe's view",
+    "🌊 A pearl diver",
+    "🎪 A trapeze artist",
+    "🐛 A caterpillar's transformation",
+    "🌸 A wedding bouquet",
+    "🎭 A standing ovation",
+    "🦙 A stubborn llama",
+    "🌋 Obsidian shards",
+    "🎪 A ringmaster's whip",
+    "🦗 A chirping chorus",
+    "🌙 A sleepwalker",
+    "🎨 A graffiti message",
+    "🦎 A chameleon's disguise",
+    "🌊 A surfing competition",
+    "🎪 A knife thrower",
+    "🐌 A snail's pace",
+    "🌸 A botanical poison",
+    "🎭 A final curtain call",
+    "🦩 A flamingo flock",
+    "🌋 A dormant threat",
+    "🎪 A fortune wheel",
+    "🦈 A shark's fin",
+    "🌙 A midnight meeting",
+    "🎨 A color that doesn't exist",
+    "🦝 A raccoon thief",
+    "🌊 A rogue wave",
+    "🎪 A human cannonball",
+    "🐊 A crocodile's tears",
+    "🌸 A pressed flower",
+    "🎭 A method actor",
+    "🦎 A cold-blooded killer",
+    "🌋 Pumice stone",
+    "🎪 A escape artist",
+    "🦢 A swan song",
+    "🌙 A werewolf's curse",
+    "🎨 A blank canvas",
+    "🦨 A stink bomb",
+    "🌊 A bottle of rum",
+    "🎪 A strongman's feat",
+    "🐝 A honey trap",
+    "🌸 A flower crown",
+    "🎭 A improvisation",
+    "🦘 A boxing kangaroo",
+    "🌋 A pyroclastic flow",
+    "🎪 A acrobat's leap",
+    "🦂 A deadly sting",
+    "🌙 A nocturnal creature",
+    "🎨 A museum heist",
+    "🦭 A circus seal",
+    "🌊 A sailor's tattoo",
+    "🎪 A sideshow attraction",
+    "🐻 A bear trap",
+    "🌸 A funeral wreath",
+    "🎭 A curtain rises",
+    "🦫 A gnawed tree",
+    "🌋 A smoking crater",
+    "🎪 A trained monkey",
+    "🦉 A night watch",
+    "🌙 A silver bullet",
+    "🎨 A Renaissance fair"
+];
+
+        function rollDice() {
+            const container = document.getElementById('diceContainer');
+            const button = document.getElementById('rollBtn');
+            const count = parseInt(document.getElementById('diceCount').value) || 3;
+            
+            // Clamp count between 1 and 5
+            const diceCount = Math.max(1, Math.min(5, count));
+            
+            // Disable button during animation
+            button.disabled = true;
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            // Get random unique elements
+            const shuffled = [...storyElements].sort(() => Math.random() - 0.5);
+            const selected = shuffled.slice(0, diceCount);
+            
+            // Create dice elements with staggered animation
+            selected.forEach((element, index) => {
+                setTimeout(() => {
+                    const dice = document.createElement('div');
+                    dice.className = 'dice';
+                    dice.textContent = element;
+                    container.appendChild(dice);
+                    
+                    // Re-enable button after last dice
+                    if (index === selected.length - 1) {
+                        button.disabled = false;
+                    }
+                }, index * 150);
+            });
+        }
+    </script>
+</body>
+</html>
